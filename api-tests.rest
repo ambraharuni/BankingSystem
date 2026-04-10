@@ -1,0 +1,130 @@
+# Banking System API Testing
+
+## ⚠️ IMPORTANT: Role-Based Access Control
+# Each endpoint requires a specific role:
+# - /admin/** → Requires ADMIN role (login as "admin")
+# - /teller/** → Requires TELLER role (login as "teller1") 
+# - /client/** → Requires CLIENT role (login as "client1")
+# - /auth/** → No authentication required
+
+## Step 1: Test Login First
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "123456"
+}
+
+### Expected Response:
+# {
+#   "token": "eyJhbGciOiJIUzI1NiJ9...",
+#   "role": "ADMIN"
+# }
+# Copy the token value (without quotes) for the next requests
+
+## Step 2: Test Admin Endpoints (Replace YOUR_TOKEN_HERE with actual token)
+
+### ✅ List All Tellers (FIRST - get the IDs!)
+GET http://localhost:8080/api/admin/tellers
+Authorization: Bearer YOUR_TOKEN_HERE
+
+### ✅ Create New Teller
+POST http://localhost:8080/api/admin/tellers
+Authorization: Bearer YOUR_TOKEN_HERE
+Content-Type: application/json
+
+{
+  "username": "testteller",
+  "password": "password123"
+}
+
+### ✅ Update Teller Password (use real ID from list above, e.g., 1, 2, 3...)
+PUT http://localhost:8080/api/admin/tellers/1/password
+Authorization: Bearer YOUR_TOKEN_HERE
+Content-Type: application/json
+
+{
+  "username": "testteller",
+  "password": "newpassword123"
+}
+
+### ✅ Delete Teller (use real ID from list above, e.g., 1, 2, 3...)
+DELETE http://localhost:8080/api/admin/tellers/1
+Authorization: Bearer YOUR_TOKEN_HERE
+
+## Error Testing - Wrong Role Access
+
+### ❌ Try Admin Token on Teller Endpoint (should return 403 Forbidden)
+GET http://localhost:8080/api/teller/clients
+Authorization: Bearer YOUR_ADMIN_TOKEN_HERE
+
+### ❌ Try Client Token on Admin Endpoint (should return 403 Forbidden)
+GET http://localhost:8080/api/admin/tellers
+Authorization: Bearer YOUR_CLIENT_TOKEN_HERE
+
+### ❌ Try Teller Token on Client Endpoint (should return 403 Forbidden)
+GET http://localhost:8080/api/client/accounts
+Authorization: Bearer YOUR_TELLER_TOKEN_HERE
+
+## Step 3: Test Teller Endpoints (Login as teller1 first)
+
+### Login as Teller
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "teller1",
+  "password": "123456"
+}
+
+### List All Clients
+GET http://localhost:8080/api/teller/clients
+Authorization: Bearer YOUR_TELLER_TOKEN_HERE
+
+### Create New Client
+POST http://localhost:8080/api/teller/clients
+Authorization: Bearer YOUR_TELLER_TOKEN_HERE
+Content-Type: application/json
+
+{
+  "username": "testclient",
+  "password": "password123"
+}
+
+## Step 4: Test Client Endpoints (Login as client1 first)
+
+### Login as Client
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "client1",
+  "password": "123456"
+}
+
+### Get My Accounts
+GET http://localhost:8080/api/client/accounts
+Authorization: Bearer YOUR_CLIENT_TOKEN_HERE
+
+### Request New Account
+POST http://localhost:8080/api/client/accounts/request
+Authorization: Bearer YOUR_CLIENT_TOKEN_HERE
+Content-Type: application/json
+
+{
+  "currency": "USD"
+}
+
+## Error Testing
+
+### Test Without Token (should return 401)
+GET http://localhost:8080/api/admin/tellers
+
+### Test With Invalid Token (should return 401)
+GET http://localhost:8080/api/admin/tellers
+Authorization: Bearer invalid_token_here
+
+### Test Wrong Role (use client token on admin endpoint - should return 403)
+GET http://localhost:8080/api/admin/tellers
+Authorization: Bearer YOUR_CLIENT_TOKEN_HERE
