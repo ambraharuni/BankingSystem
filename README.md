@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Banking System
 
 A full-stack banking application featuring role-based access control, built with Spring Boot (backend) and React + Vite (frontend).
@@ -183,3 +184,7 @@ This project is for educational purposes. See individual component licenses for 
 - **"mvn not recognized"**: Use `.\mvnw.cmd` instead
 - **"npm not found"**: Install Node.js from nodejs.org
 - **Port conflicts**: Change ports in application.properties or vite.config.js
+=======
+# BankingSystem
+Java Banking System project with basic functionalities
+>>>>>>> 106c1ba439a6dae8f3f577b3fd8b5f5a579fc3fb
